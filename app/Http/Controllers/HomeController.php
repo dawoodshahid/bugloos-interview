@@ -33,35 +33,11 @@ class HomeController extends Controller
         )
         ->searchableColumns(["brand"])
         ->sort('price', 'asc')
+        ->metadata(['columnWidth' => "200px"])
         ->page(2)
         //->getData();
         ->generateView();
 
         return view('welcome', ['gridView' => $gridView]);
-    }
-
-
-    public function serviceIsCalled($data)
-    {
-        //2: colum filtering
-        dd($data);
-    }
-
-
-
-    public function sendSuccess($data)
-    {
-        return response()->json([
-            "data" => $data,
-        ]);
-    }
-
-    public function sendError($errorMessage, $data, $code)
-    {
-        return response()->json([
-            "error" => $errorMessage,
-            "data" => $data,
-            "errorCode" => $code
-        ], 402);
     }
 }

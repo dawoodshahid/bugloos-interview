@@ -7,8 +7,9 @@ use View;
 
 class GridView
 {
-    protected $data, $fields, $sortField, $sortType, $searchableColumns, $pageSize = 10, $currentPage = 0, $lastPage = 0;
+    protected $data, $fields, $sortField, $sortType, $searchableColumns, $metadata, $pageSize = 10, $currentPage = 0, $lastPage = 0;
 
+    //Public Function to set default configs
     public function config(Array $config)
     {
         if(isset($config['pageSize']))
@@ -19,12 +20,21 @@ class GridView
         return $this;
     }
 
+    //Public Function to set Data
     public function data($data)
     {
         $this->data = $data;
         return $this;
     }
 
+    //Public Function to set metadata
+    public function metadata($data)
+    {
+        $this->metadata = $data;
+        return $this;
+    }
+
+    //Public Function to set fields data
     public function fields($fields)
 	{
         $validFields = ['label', 'type', 'sanitize', 'options'];
@@ -71,6 +81,7 @@ class GridView
 		return $this;
 	}
 
+    //Public Function to set sort info
     public function sort($field, $type)
     {
         $type = strtolower($type);
@@ -92,12 +103,14 @@ class GridView
         return $this;
     }
 
+    //Public Function to get raw data for gridview
     public function getData()
     {
         $data = $this->make();
         return $data;
     }
 
+    //Public Function to get gridview html
     public function generateView()
     {
         $data = $this->make();
@@ -107,6 +120,7 @@ class GridView
         ]);
     }
 
+    //Public Function to set searchable columns
     public function searchableColumns(Array $columns)
     {
         $validFields = array_keys($this->fields);
@@ -121,6 +135,7 @@ class GridView
         return $this;
     }
 
+    //Public Function to set page for pagination
     public function page($page)
     {
         $this->currentPage = $page - 1;
@@ -128,6 +143,7 @@ class GridView
         return $this;
     }
 
+    //Private function to cast data types dunamically according to the required data types
     private function formatData($format, $value)
     {
         settype($value, $format);
@@ -135,6 +151,7 @@ class GridView
         return $value;
     }
 
+    //Private function to validate requested data types
     private function validateType($key, $type)
     {
         $validTypes = ["string", "integer", "float", "boolean", "array"];
@@ -145,6 +162,7 @@ class GridView
         }
     }
 
+    //Private function to check duplicate fields
     private function checkHasDoubleAlias()
 	{
 		$aliases = [];
@@ -163,11 +181,13 @@ class GridView
 		}
 	}
 
+    //Private function to generate the raw data for futher use
     private function make()
     {
         $validFields = array_keys($this->fields);
         $finalData = [];
 
+        //Filtering Data
         foreach($this->data as $row)
         {
             $temp = [];
@@ -181,8 +201,10 @@ class GridView
             {
                 if(in_array($key, $validFields))
                 {
+                    //Dynamic data casting
                     $temp[$key] = $this->formatData($this->fields[$key]['type'], $value);
 
+                    //Handling Domain based field eg ['Apple'=>'A', 'Samsung'=>'S']
                     if(count($this->fields[$key]['options']) > 0)
                     {
                         $temp[$key] = isset($this->fields[$key]['options'][$temp[$key]]) ? $this->fields[$key]['options'][$temp[$key]] : "-";
@@ -196,6 +218,7 @@ class GridView
             }
         }
 
+        //Sorting Data
         if(count($finalData) > 0 && $this->sortField != '' && $this->sortType != '')
         {
             usort($finalData, function($a, $b) 
@@ -213,12 +236,14 @@ class GridView
 
         $this->lastPage = (int)ceil(count($finalData) / $this->pageSize);
 
+        //Extracting headers for easy of use
         $headers = [];
         foreach($this->fields as $key => $value)
         {
             $headers[$key] = $value['label'];
         }
 
+        //Preparing to send data
         $temp = [];
         $temp['data'] = $finalData;
 
@@ -232,6 +257,7 @@ class GridView
         $temp['lastPage'] = $this->lastPage;
         $temp['header'] = $headers;
         $temp['searchableColumns'] = $this->searchableColumns;
+        $temp['metadata'] = $this->metadata;
 
         return $temp;
     }
