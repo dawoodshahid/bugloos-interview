@@ -1,0 +1,19 @@
+{
+    "name": "dawoodshahid/grid-view-bugloos",
+    "description": "A simple package to turn your data into a beautiful grid",
+    "type": "library",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "DawoodShahid\\GridView\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Dawood Shahid",
+            "email": "dawood.shahid@gmail.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {}
+}
